@@ -24,17 +24,43 @@ set(SRCS_DUTILS
   DUtils/Random.cpp
   DUtils/Timestamp.cpp)
 
-find_package(OpenCV 3.0 QUIET)
-if(NOT OpenCV_FOUND)
-   find_package(OpenCV 2.4.3 QUIET)
+if (EMSCRIPTEN)
+
+#   include_directories(${OpenCV_INCLUDE_DIRS})
+   include_directories(${PROJECT_SOURCE_DIR}/../opencv-3.4/include)
+   include_directories(${PROJECT_SOURCE_DIR}/../opencv-3.4/build_wasm)
+   file(GLOB opencv_include_modules "${PROJECT_SOURCE_DIR}/../opencv-3.4/modules/*/include")
+   include_directories(${opencv_include_modules})
+
+else(EMSCRIPTEN)
+
+   find_package(OpenCV 3.0 QUIET)
    if(NOT OpenCV_FOUND)
-      message(FATAL_ERROR "OpenCV > 2.4.3 not found.")
+      find_package(OpenCV 2.4.3 QUIET)
+      if(NOT OpenCV_FOUND)
+         message(FATAL_ERROR "OpenCV > 2.4.3 not found.")
+      endif()
    endif()
-endif()
+
+   include_directories(${OpenCV_INCLUDE_DIRS})
+
+endif ()
+
 
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-include_directories(${OpenCV_INCLUDE_DIRS})
+
 add_library(DBoW2 SHARED ${SRCS_DBOW2} ${SRCS_DUTILS})
-target_link_libraries(DBoW2 ${OpenCV_LIBS})
+
+if (EMSCRIPTEN)
+
+   file(GLOB opencv_js "${PROJECT_SOURCE_DIR}/../opencv-3.4/build_wasm/lib/*.a")
+
+   target_link_libraries(DBoW2
+           ${opencv_js}
+           )
+else(EMSCRIPTEN)
+   target_link_libraries(DBoW2 ${OpenCV_LIBS})
+endif ()
+
 

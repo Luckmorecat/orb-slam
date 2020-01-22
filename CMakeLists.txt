@@ -28,16 +28,36 @@ endif()
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
-find_package(OpenCV 3.0 QUIET)
-if(NOT OpenCV_FOUND)
-   find_package(OpenCV 2.4.3 QUIET)
-   if(NOT OpenCV_FOUND)
-      message(FATAL_ERROR "OpenCV > 2.4.3 not found.")
-   endif()
-endif()
+if (EMSCRIPTEN)
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s WASM=1")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_PTHREADS=0")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ASSERTIONS=1")
 
-find_package(Eigen3 3.1.0 REQUIRED)
-find_package(Pangolin REQUIRED)
+   include_directories(${PROJECT_SOURCE_DIR}/Thirdparty/opencv-3.4/include)
+   include_directories(${PROJECT_SOURCE_DIR}/Thirdparty/opencv-3.4/build_wasm)
+   file(GLOB opencv_include_modules "${PROJECT_SOURCE_DIR}/Thirdparty/opencv-3.4/modules/*/include")
+   include_directories(${opencv_include_modules})
+   set(EIGEN3_INCLUDE_DIR $ENV{EIGEN3_INCLUDE_DIR})
+
+   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib_wasm)
+
+   file(GLOB opencv_js "${PROJECT_SOURCE_DIR}/Thirdparty/opencv-3.4/build_wasm/lib/*.a")
+
+else(EMSCRIPTEN)
+   find_package(OpenCV 3.0 QUIET)
+   if(NOT OpenCV_FOUND)
+      find_package(OpenCV 2.4.3 REQUIRED)
+      if(NOT OpenCV_FOUND)
+         message(FATAL_ERROR "OpenCV > 2.4.3 not found.")
+      endif()
+   endif()
+
+   find_package(Eigen3 3.1.0 REQUIRED)
+   find_package(Pangolin REQUIRED)
+
+   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+
+endif()
 
 include_directories(
 ${PROJECT_SOURCE_DIR}
@@ -47,9 +67,8 @@ ${EIGEN3_INCLUDE_DIR}
 ${Pangolin_INCLUDE_DIRS}
 )
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} STATIC
 src/System.cc
 src/Tracking.cc
 src/LocalMapping.cc
@@ -75,13 +94,26 @@ src/Viewer.cc
         src/ViewerAR.cpp
 )
 
-target_link_libraries(${PROJECT_NAME}
-${OpenCV_LIBS}
-${EIGEN3_LIBS}
-${Pangolin_LIBRARIES}
-${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
-${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
-)
+if (EMSCRIPTEN)
+   target_link_libraries(${PROJECT_NAME}
+#           ${OpenCV_LIBS}
+           ${opencv_js}
+           ${EIGEN3_LIBS}
+           ${Pangolin_LIBRARIES}
+           ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.a
+           ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.a
+           )
+else(EMSCRIPTEN)
+   target_link_libraries(${PROJECT_NAME}
+           ${OpenCV_LIBS}
+           ${EIGEN3_LIBS}
+           ${Pangolin_LIBRARIES}
+           ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
+           ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
+           )
+endif ()
+
+
 
 # Build examples
 
