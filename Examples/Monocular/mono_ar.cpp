@@ -26,12 +26,19 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include"../ROS/ORB_SLAM2/src/AR/ViewerAR.h"
 
 #include<opencv2/core/core.hpp>
 
 #include<System.h>
 
 using namespace std;
+
+ORB_SLAM2::ViewerAR viewerAR;
+bool bRGB = true;
+
+cv::Mat K;
+cv::Mat DistCoef;
 
 void LoadImages(const string &strFile, vector<string> &vstrImageFilenames,
                 vector<double> &vTimestamps);
@@ -53,7 +60,7 @@ int main(int argc, char **argv)
     int nImages = vstrImageFilenames.size();
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,true);
+    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,false);
 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
@@ -63,8 +70,43 @@ int main(int argc, char **argv)
     cout << "Start processing sequence ..." << endl;
     cout << "Images in the sequence: " << nImages << endl << endl;
 
+    viewerAR.SetSLAM(&SLAM);
+
+    cv::FileStorage fSettings(argv[2], cv::FileStorage::READ);
+    bRGB = static_cast<bool>((int)fSettings["Camera.RGB"]);
+    float fps = fSettings["Camera.fps"];
+    viewerAR.SetFPS(fps);
+
+    float fx = fSettings["Camera.fx"];
+    float fy = fSettings["Camera.fy"];
+    float cx = fSettings["Camera.cx"];
+    float cy = fSettings["Camera.cy"];
+
+    viewerAR.SetCameraCalibration(fx,fy,cx,cy);
+
+    K = cv::Mat::eye(3,3,CV_32F);
+    K.at<float>(0,0) = fx;
+    K.at<float>(1,1) = fy;
+    K.at<float>(0,2) = cx;
+    K.at<float>(1,2) = cy;
+
+    DistCoef = cv::Mat::zeros(4,1,CV_32F);
+    DistCoef.at<float>(0) = fSettings["Camera.k1"];
+    DistCoef.at<float>(1) = fSettings["Camera.k2"];
+    DistCoef.at<float>(2) = fSettings["Camera.p1"];
+    DistCoef.at<float>(3) = fSettings["Camera.p2"];
+    const float k3 = fSettings["Camera.k3"];
+    if(k3!=0)
+    {
+        DistCoef.resize(5);
+        DistCoef.at<float>(4) = k3;
+    }
+
     // Main loop
     cv::Mat im;
+
+    thread tViewer = thread(&ORB_SLAM2::ViewerAR::Run,&viewerAR);
+
     for(int ni=0; ni<nImages; ni++)
     {
         // Read image from file
@@ -85,7 +127,22 @@ int main(int argc, char **argv)
 #endif
 
         // Pass the image to the SLAM system
-        SLAM.TrackMonocular(im,tframe);
+        cv::Mat Tcw = SLAM.TrackMonocular(im,tframe);
+        cv::Mat imu;
+        int state = SLAM.GetTrackingState();
+        vector<ORB_SLAM2::MapPoint*> vMPs = SLAM.GetTrackedMapPoints();
+        vector<cv::KeyPoint> vKeys = SLAM.GetTrackedKeyPointsUn();
+
+        cv::undistort(im,imu,K,DistCoef);
+
+        if(bRGB)
+            viewerAR.SetImagePose(imu,Tcw,state,vKeys,vMPs);
+        else
+        {
+            cv::cvtColor(imu,imu,CV_RGB2BGR);
+            viewerAR.SetImagePose(imu,Tcw,state,vKeys,vMPs);
+        }
+
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();

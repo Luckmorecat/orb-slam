@@ -42,6 +42,7 @@ find_package(Pangolin REQUIRED)
 include_directories(
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
+${PROJECT_SOURCE_DIR}/Examples/ROS/ORB_SLAM2/src/AR
 ${EIGEN3_INCLUDE_DIR}
 ${Pangolin_INCLUDE_DIRS}
 )
@@ -68,6 +69,7 @@ src/KeyFrameDatabase.cc
 src/Sim3Solver.cc
 src/Initializer.cc
 src/Viewer.cc
+Examples/ROS/ORB_SLAM2/src/AR/ViewerAR.cc
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -110,4 +112,8 @@ target_link_libraries(mono_kitti ${PROJECT_NAME})
 add_executable(mono_euroc
 Examples/Monocular/mono_euroc.cc)
 target_link_libraries(mono_euroc ${PROJECT_NAME})
+
+add_executable(mono_tum_ar
+Examples/Monocular/mono_ar.cpp)
+target_link_libraries(mono_tum_ar ${PROJECT_NAME})
 
