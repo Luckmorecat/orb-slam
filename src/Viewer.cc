@@ -29,9 +29,18 @@
 namespace ORB_SLAM2
 {
 
-Viewer::Viewer(System* pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Tracking *pTracking, const string &strSettingPath):
-    mpSystem(pSystem), mpFrameDrawer(pFrameDrawer),mpMapDrawer(pMapDrawer), mpTracker(pTracking),
-    mbFinishRequested(false), mbFinished(true), mbStopped(true), mbStopRequested(false)
+Viewer::Viewer(
+        FrameDrawer *pFrameDrawer,
+        MapDrawer *pMapDrawer,
+        const string &strSettingPath
+        )
+        :mpFrameDrawer(pFrameDrawer),
+        mpMapDrawer(pMapDrawer),
+        mpTracker(nullptr),
+        mbFinishRequested(false),
+        mbFinished(true),
+        mbStopped(true),
+        mbStopRequested(false)
 {
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
 
@@ -52,6 +61,23 @@ Viewer::Viewer(System* pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer
     mViewpointY = fSettings["Viewer.ViewpointY"];
     mViewpointZ = fSettings["Viewer.ViewpointZ"];
     mViewpointF = fSettings["Viewer.ViewpointF"];
+}
+
+void Viewer::SetTracking(const ORB_SLAM2::Tracking *tracking) {
+    mpTracker = const_cast<Tracking *>(tracking);
+}
+
+void Viewer::SetCurrentCameraPoseMapDrawer(const cv::Mat &Tcw) {
+    mpMapDrawer->SetCurrentCameraPose(Tcw);
+}
+
+void Viewer::UpdateFrameDrawer(Tracking *pTracker) {
+    mpFrameDrawer->Update(pTracker);
+}
+
+void Viewer::SetMap(ORB_SLAM2::Map* map) {
+    mpMapDrawer->SetMap(map);
+    mpFrameDrawer->SetMap(map);
 }
 
 void Viewer::Run()

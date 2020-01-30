@@ -22,10 +22,12 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
+#include "IViewer.h"
 #include "FrameDrawer.h"
 #include "MapDrawer.h"
 #include "Tracking.h"
 #include "System.h"
+#include "opencv2/core/core.hpp"
 
 #include <mutex>
 
@@ -37,30 +39,37 @@ class FrameDrawer;
 class MapDrawer;
 class System;
 
-class Viewer
+class Viewer: public IViewer
 {
 public:
-    Viewer(System* pSystem, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Tracking *pTracking, const string &strSettingPath);
+    Viewer(FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, const string &strSettingPath);
 
     // Main thread function. Draw points, keyframes, the current camera pose and the last processed
     // frame. Drawing is refreshed according to the camera fps. We use Pangolin.
     void Run();
 
-    void RequestFinish();
+    void RequestFinish() override;
 
-    void RequestStop();
+    void RequestStop() override;
 
-    bool isFinished();
+    bool isFinished() override;
 
-    bool isStopped();
+    bool isStopped() override;
 
-    void Release();
+    void Release() override;
+
+    void UpdateFrameDrawer(Tracking *pTracker) override;
+
+    void SetCurrentCameraPoseMapDrawer(const cv::Mat &Tcw) override;
+
+    void SetMap(Map *map) override;
+
+    void SetTracking(const Tracking *tracking) override;
 
 private:
 
     bool Stop();
 
-    System* mpSystem;
     FrameDrawer* mpFrameDrawer;
     MapDrawer* mpMapDrawer;
     Tracking* mpTracker;

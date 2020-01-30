@@ -40,13 +40,15 @@ class Viewer;
 class FrameDrawer
 {
 public:
-    FrameDrawer(Map* pMap);
+    FrameDrawer();
 
     // Update info from the last processed frame.
     void Update(Tracking *pTracker);
 
     // Draw last processed frame.
     cv::Mat DrawFrame();
+    
+    void SetMap(const Map *map);
 
 protected:
 
@@ -63,7 +65,7 @@ protected:
     vector<int> mvIniMatches;
     int mState;
 
-    Map* mpMap;
+    Map *mpMap;
 
     std::mutex mMutex;
 };
