@@ -27,24 +27,50 @@
 #include<opencv2/core/core.hpp>
 
 #include "Tracking.h"
-#include "FrameDrawer.h"
-#include "MapDrawer.h"
+//#include "FrameDrawer.h"
+//#include "MapDrawer.h"
+#include "Frame.h"
 #include "Map.h"
 #include "LocalMapping.h"
 #include "LoopClosing.h"
 #include "KeyFrameDatabase.h"
 #include "ORBVocabulary.h"
-#include "Viewer.h"
+//#include "Viewer.h"
+#include<string>
+#include<thread>
 
 namespace ORB_SLAM2
 {
 
-class Viewer;
+//class Viewer;
 class FrameDrawer;
 class Map;
 class Tracking;
 class LocalMapping;
 class LoopClosing;
+
+class PlaneSlam
+{
+public:
+    PlaneSlam(const std::vector<MapPoint*> &vMPs, const cv::Mat &Tcw);
+    PlaneSlam(const float &nx, const float &ny, const float &nz, const float &ox, const float &oy, const float &oz);
+
+    void Recompute();
+
+    //normal
+    cv::Mat n;
+    //origin
+    cv::Mat o;
+    //arbitrary orientation along normal
+    float rang;
+    //transformation from world to the plane
+    cv::Mat Tpw;
+    pangolin::OpenGlMatrix glTpw;
+    //MapPoints that define the plane
+    std::vector<MapPoint*> mvMPs;
+    //camera pose when the plane was first observed (to compute normal direction)
+    cv::Mat mTcw, XC;
+};
 
 class System
 {
@@ -76,6 +102,14 @@ public:
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
     // Returns the camera pose (empty if tracking fails).
     cv::Mat TrackMonocular(const cv::Mat &im, const double &timestamp);
+
+    Frame GetCurrentFrame();
+
+    cv::Mat DrawFeatures();
+
+    int GetCountKeyFrames();
+
+    int GetCountMapPointsInMap();
 
     // This stops local mapping thread (map building) and performs only camera tracking.
     void ActivateLocalizationMode();
@@ -122,6 +156,7 @@ public:
     std::vector<MapPoint*> GetTrackedMapPoints();
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
 
+    PlaneSlam* DetectPlane(const cv::Mat &im, const double &timestamp, cv::Mat DistCoef, cv::Mat K, const int iterations = 50);
 private:
 
     // Input sensor
@@ -149,10 +184,10 @@ private:
     LoopClosing* mpLoopCloser;
 
     // The viewer draws the map and the current camera pose. It uses Pangolin.
-    Viewer* mpViewer;
+    //Viewer* mpViewer;
 
     FrameDrawer* mpFrameDrawer;
-    MapDrawer* mpMapDrawer;
+    //MapDrawer* mpMapDrawer;
 
     // System threads: Local Mapping, Loop Closing, Viewer.
     // The Tracking thread "lives" in the main execution thread that creates the System object.

@@ -54,7 +54,7 @@ class Tracking
 {  
 
 public:
-    Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Map* pMap,
+    Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, Map* pMap,
              KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor);
 
     // Preprocess the input and call Track(). Extract features and performs stereo matching.
@@ -74,7 +74,7 @@ public:
     // Use this function if you have deactivated local mapping and you only want to localize the camera.
     void InformOnlyTracking(const bool &flag);
 
-
+    bool IsInitialized();
 public:
 
     // Tracking states
@@ -174,9 +174,9 @@ protected:
     System* mpSystem;
     
     //Drawers
-    Viewer* mpViewer;
+    //Viewer* mpViewer;
     FrameDrawer* mpFrameDrawer;
-    MapDrawer* mpMapDrawer;
+    //MapDrawer* mpMapDrawer;
 
     //Map
     Map* mpMap;

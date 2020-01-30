@@ -125,7 +125,11 @@ int main(int argc, char **argv)
 #else
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
-
+        ORB_SLAM2::PlaneSlam *plane;
+        if (ni%50 == 0)
+        {
+            plane = SLAM.DetectPlane(im,tframe,DistCoef,K);
+        }
         // Pass the image to the SLAM system
         cv::Mat Tcw = SLAM.TrackMonocular(im,tframe);
         cv::Mat imu;
