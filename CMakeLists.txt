@@ -69,7 +69,10 @@ src/KeyFrameDatabase.cc
 src/Sim3Solver.cc
 src/Initializer.cc
 src/Viewer.cc
-Examples/ROS/ORB_SLAM2/src/AR/ViewerAR.cc
+#Examples/ROS/ORB_SLAM2/src/AR/ViewerAR.cc
+        src/Plane.cpp
+        src/PlaneDetector.cpp
+        src/ViewerAR.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -113,9 +116,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
 #Examples/Monocular/mono_euroc.cc)
 #target_link_libraries(mono_euroc ${PROJECT_NAME})
 #
-#add_executable(mono_tum_ar
-#Examples/Monocular/mono_ar.cpp)
-#target_link_libraries(mono_tum_ar ${PROJECT_NAME})
+add_executable(mono_tum_ar
+Examples/Monocular/mono_ar.cpp)
+target_link_libraries(mono_tum_ar ${PROJECT_NAME})
 
 add_executable(mono_tum_custom
 Examples/Monocular/mono_tum_custom.cc)

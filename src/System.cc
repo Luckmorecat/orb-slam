@@ -81,6 +81,9 @@ System::System(
     }
     cout << "Vocabulary loaded!" << endl << endl;
 
+    //Create PlaneDetector instance
+    planeDetector = new PlaneDetector();
+
     //Create KeyFrame Database
     mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
 
@@ -322,6 +325,10 @@ void System::Shutdown()
         usleep(5000);
     }
 
+}
+
+Plane* System::DetectPlane(const int iterations) {
+    return planeDetector->DetectPlane(mpTracker->mCurrentFrame.mTcw, mTrackedMapPoints, iterations);
 }
 
 void System::SaveTrajectoryTUM(const string &filename)

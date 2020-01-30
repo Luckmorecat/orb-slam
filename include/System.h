@@ -33,6 +33,8 @@
 #include "KeyFrameDatabase.h"
 #include "ORBVocabulary.h"
 #include "IViewer.h"
+#include "Plane.h"
+#include "PlaneDetector.h"
 
 namespace ORB_SLAM2
 {
@@ -43,6 +45,7 @@ class Map;
 class Tracking;
 class LocalMapping;
 class LoopClosing;
+class Plane;
 
 class System
 {
@@ -110,6 +113,8 @@ public:
     // See format details at: http://www.cvlibs.net/datasets/kitti/eval_odometry.php
     void SaveTrajectoryKITTI(const string &filename);
 
+    Plane* DetectPlane(const int iterations);
+
     // TODO: Save/Load functions
     // SaveMap(const string &filename);
     // LoadMap(const string &filename);
@@ -121,6 +126,8 @@ public:
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
 
 private:
+
+    PlaneDetector *planeDetector;
 
     // Input sensor
     eSensor mSensor;

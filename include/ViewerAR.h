@@ -3,34 +3,46 @@
 #ifndef ORB_SLAM2_VIEWERAR_H
 #define ORB_SLAM2_VIEWERAR_H
 
+#include "IViewer.h"
+#include <pangolin/pangolin.h>
+#include <opencv2/core/core.hpp>
+#include "mutex"
+#include "Plane.h"
+#include "string"
+
 namespace ORB_SLAM2
 {
-    class ViewerAR
+    class ViewerAR: public IViewer
     {
     public:
-        ViewerAR();
-
-        void SetFPS(const float fps){
-            mFPS = fps;
-            mT=1e3/fps;
-        }
-
-        void SetSLAM(ORB_SLAM2::System* pSystem){
-            mpSystem = pSystem;
-        }
+        ViewerAR(const string settings);
 
         // Main thread function.
         void Run();
 
-        void SetCameraCalibration(const float &fx_, const float &fy_, const float &cx_, const float &cy_){
-            fx = fx_; fy = fy_; cx = cx_; cy = cy_;
-        }
-
-        void SetImagePose(const cv::Mat &im, const cv::Mat &Tcw, const int &status,
-                          const std::vector<cv::KeyPoint> &vKeys, const std::vector<MapPoint*> &vMPs);
+//        void SetImagePose(const cv::Mat &im, const cv::Mat &Tcw, const int &status,
+//                          const std::vector<cv::KeyPoint> &vKeys, const std::vector<MapPoint*> &vMPs);
 
         void GetImagePose(cv::Mat &im, cv::Mat &Tcw, int &status,
                           std::vector<cv::KeyPoint> &vKeys,  std::vector<MapPoint*> &vMPs);
+
+        void RequestFinish() override;
+
+        void RequestStop() override;
+
+        bool isFinished() override;
+
+        bool isStopped() override;
+
+        void Release() override;
+
+        void UpdateFrameDrawer(Tracking *pTracker) override;
+
+        void SetCurrentCameraPoseMapDrawer(const cv::Mat &Tcw) override;
+
+        void SetMap(Map *map) override;
+
+        void SetTracking(const Tracking *tracking) override;
 
     private:
 
@@ -49,8 +61,8 @@ namespace ORB_SLAM2
         Plane* DetectPlane(const cv::Mat Tcw, const std::vector<MapPoint*> &vMPs, const int iterations=50);
 
         // frame rate
-        float mFPS, mT;
-        float fx,fy,cx,cy;
+//        float mFPS, mT;
+//        float fx,fy,cx,cy;
 
         // Last processed image and computed pose by the SLAM
         std::mutex mMutexPoseImage;

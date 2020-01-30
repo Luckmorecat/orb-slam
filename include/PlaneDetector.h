@@ -7,6 +7,7 @@
 
 #include "Plane.h"
 #include "opencv2/core/core.hpp"
+#include "MapPoint.h"
 
 namespace ORB_SLAM2
 {

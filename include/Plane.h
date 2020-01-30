@@ -2,6 +2,8 @@
 #define ORB_SLAM2_PLANE_H
 
 #include <opencv2/core/core.hpp>
+#include "pangolin/pangolin.h"
+#include "MapPoint.h"
 
 namespace ORB_SLAM2
 {
@@ -30,6 +32,8 @@ namespace ORB_SLAM2
         static cv::Mat ExpSO3(const float &x, const float &y, const float &z);
 
         static cv::Mat ExpSO3(const cv::Mat &v);
+
+        constexpr static const float eps = 1e-4;
 
     };
 }
