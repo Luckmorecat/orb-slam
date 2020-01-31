@@ -58,7 +58,7 @@ namespace ORB_SLAM2
         void DrawPlane(Plane* pPlane, int ndivs, float ndivsize);
         void DrawTrackedPoints(const std::vector<cv::KeyPoint> &vKeys, const std::vector<MapPoint*> &vMPs, cv::Mat &im);
 
-        Plane* DetectPlane(const cv::Mat Tcw, const std::vector<MapPoint*> &vMPs, const int iterations=50);
+        Plane* DetectPlane(const int iterations=50);
 
         // frame rate
 //        float mFPS, mT;
@@ -72,6 +72,8 @@ namespace ORB_SLAM2
         std::vector<cv::KeyPoint> mvKeys;
         std::vector<MapPoint*> mvMPs;
 
+        std::mutex mMutexStop;
+        bool isStop;
     };
 }
 

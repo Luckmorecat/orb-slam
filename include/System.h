@@ -125,6 +125,10 @@ public:
     std::vector<MapPoint*> GetTrackedMapPoints();
     std::vector<cv::KeyPoint> GetTrackedKeyPointsUn();
 
+    cv::Mat GetCurrentTcw();
+
+    cv::Mat mCurrentTcw;
+
 private:
 
     PlaneDetector *planeDetector;

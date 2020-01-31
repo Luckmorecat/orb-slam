@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 namespace ORB_SLAM2 {
-    ViewerAR::ViewerAR(const string settings) {
+    ViewerAR::ViewerAR(const string settings):isStop(false) {
         cv::FileStorage fSettings(settings, cv::FileStorage::READ);
         float fps = fSettings["Camera.fps"];
         SetFPS(fps);
@@ -125,7 +125,7 @@ namespace ORB_SLAM2 {
                     menu_clear = false;
                 }
                 if (menu_detectplane) {
-                    Plane *pPlane = DetectPlane(Tcw, vMPs, 50);
+                    Plane *pPlane = DetectPlane(50);
                     if (pPlane) {
                         cout << "New virtual cube inserted!" << endl;
                         vpPlane.push_back(pPlane);
@@ -186,10 +186,10 @@ namespace ORB_SLAM2 {
 
     void ViewerAR::UpdateFrameDrawer(ORB_SLAM2::Tracking *pTracker) {
         unique_lock<mutex> lock(mMutexPoseImage);
-        mStatus = mpSystem->GetTrackingState();
+        mStatus = pTracker->mState;
         mvKeys = pTracker->mCurrentFrame.mvKeys;
         mvMPs =  pTracker->mCurrentFrame.mvpMapPoints;
-        mImage = pTracker->mImGray;
+        mImage = pTracker->mVanilaIm;
     }
 
     void ViewerAR::GetImagePose(cv::Mat &im, cv::Mat &Tcw, int &status, std::vector<cv::KeyPoint> &vKeys,  std::vector<MapPoint*> &vMPs)
@@ -211,11 +211,14 @@ namespace ORB_SLAM2 {
     }
 
     bool ViewerAR::isStopped() {
-        return false;
+        unique_lock<mutex> lock(mMutexStop);
+        isStop = true;
+        return isStop;
     }
 
     void ViewerAR::Release() {
-        return;
+        unique_lock<mutex> lock(mMutexStop);
+        isStop = false;
     }
 
     void ViewerAR::SetMap(ORB_SLAM2::Map *map) {
@@ -355,7 +358,7 @@ namespace ORB_SLAM2 {
         }
     }
 
-    Plane* ViewerAR::DetectPlane(const cv::Mat Tcw, const std::vector<MapPoint*> &vMPs, const int iterations)
+    Plane* ViewerAR::DetectPlane(const int iterations)
     {
         return mpSystem->DetectPlane(iterations);
     }

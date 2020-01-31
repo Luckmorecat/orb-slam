@@ -273,9 +273,12 @@ cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp)
     mTrackingState = mpTracker->mState;
     mTrackedMapPoints = mpTracker->mCurrentFrame.mvpMapPoints;
     mTrackedKeyPointsUn = mpTracker->mCurrentFrame.mvKeysUn;
+    mCurrentTcw = Tcw.clone();
 
     return Tcw;
 }
+
+
 
 void System::ActivateLocalizationMode()
 {
@@ -328,7 +331,9 @@ void System::Shutdown()
 }
 
 Plane* System::DetectPlane(const int iterations) {
-    return planeDetector->DetectPlane(mpTracker->mCurrentFrame.mTcw, mTrackedMapPoints, iterations);
+    cv::Mat tcw = GetCurrentTcw();
+    vector<MapPoint*> mapPoints = GetTrackedMapPoints();
+    return planeDetector->DetectPlane(tcw, mapPoints, iterations);
 }
 
 void System::SaveTrajectoryTUM(const string &filename)
@@ -494,6 +499,12 @@ vector<MapPoint*> System::GetTrackedMapPoints()
     unique_lock<mutex> lock(mMutexState);
     return mTrackedMapPoints;
 }
+
+cv::Mat System::GetCurrentTcw() {
+    unique_lock<mutex> lock(mMutexState);
+    return mCurrentTcw;
+}
+
 
 vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
 {
