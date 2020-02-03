@@ -31,6 +31,12 @@
 namespace ORB_SLAM2
 {
 
+    System::System(
+            const string &strVocFile,
+            const string &strSettingsFile,
+            const ORB_SLAM2::System::eSensor sensor,
+            ORB_SLAM2::WebViewer viewer): System(strVocFile, strSettingsFile, sensor, &viewer){}
+
 System::System(
         const string &strVocFile,
         const string &strSettingsFile,
@@ -511,5 +517,50 @@ vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
     unique_lock<mutex> lock(mMutexState);
     return mTrackedKeyPointsUn;
 }
+
+cv::Mat System::GetCurrentCameraPose() {
+    cv::Mat Rwc(3,3,CV_32F);
+    cv::Mat twc(3,1,CV_32F);
+    cv::Mat cameraPose = mpTracker->mCurrentFrame.mTcw.clone();
+    cv::Mat matrix(4, 4, CV_32F);
+    {
+        Rwc = cameraPose.rowRange(0,3).colRange(0,3).t();
+        twc = Rwc*cameraPose.rowRange(0,3).col(3);
+    }
+
+    matrix.at<float>(0, 0) = Rwc.at<float>(0,0);
+    matrix.at<float>(1,0) = Rwc.at<float>(1,0);
+    matrix.at<float>(2,0) = Rwc.at<float>(2,0);
+    matrix.at<float>(3,0)  = 0.0;
+
+    matrix.at<float>(0,1) = Rwc.at<float>(0,1);
+    matrix.at<float>(1,1) = Rwc.at<float>(1,1);
+    matrix.at<float>(2,1) = Rwc.at<float>(2,1);
+    matrix.at<float>(3,1)  = 0.0;
+
+    matrix.at<float>(0,2) = Rwc.at<float>(0,2);
+    matrix.at<float>(1,2) = Rwc.at<float>(1,2);
+    matrix.at<float>(2,2) = Rwc.at<float>(2,2);
+    matrix.at<float>(3,2)  = 0.0;
+
+    matrix.at<float>(0,3) = twc.at<float>(0);
+    matrix.at<float>(1,3) = twc.at<float>(1);
+    matrix.at<float>(2,3) = twc.at<float>(2);
+    matrix.at<float>(3,3)  = 1.0;
+
+    return matrix;
+}
+
+int System::GetCountKeyFrames() {
+    return mpMap->GetAllKeyFrames().size();
+}
+
+int System::GetCountMapPointsInMap() {
+    return mpMap->GetAllMapPoints().size();
+}
+
+    cv::Mat System::DrawFeatures() {
+        return mpViewer->DrawFrame();
+    }
 
 } //namespace ORB_SLAM

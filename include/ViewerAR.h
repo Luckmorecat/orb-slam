@@ -18,7 +18,7 @@ namespace ORB_SLAM2
         ViewerAR(const string settings);
 
         // Main thread function.
-        void Run();
+        void Run() override;
 
 //        void SetImagePose(const cv::Mat &im, const cv::Mat &Tcw, const int &status,
 //                          const std::vector<cv::KeyPoint> &vKeys, const std::vector<MapPoint*> &vMPs);
@@ -43,6 +43,8 @@ namespace ORB_SLAM2
         void SetMap(Map *map) override;
 
         void SetTracking(const Tracking *tracking) override;
+
+        cv::Mat DrawFrame() override;
 
     private:
 

@@ -66,6 +66,8 @@ public:
 
     void SetTracking(const Tracking *tracking) override;
 
+    cv::Mat DrawFrame() override;
+
 private:
 
     bool Stop();

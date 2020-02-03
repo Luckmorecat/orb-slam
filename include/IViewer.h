@@ -54,6 +54,8 @@ namespace ORB_SLAM2
 
         virtual void SetTracking(const Tracking *tracking) = 0;
 
+        virtual cv::Mat DrawFrame() = 0;
+
     protected:
         // frame rate
         float mFPS, mT;

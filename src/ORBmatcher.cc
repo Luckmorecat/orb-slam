@@ -27,8 +27,11 @@
 
 #include "Thirdparty/DBoW2/DBoW2/FeatureVector.h"
 
+#ifdef EMSCRIPTEN
+#include<stdint.h>
+#else
 #include<stdint-gcc.h>
-
+#endif
 using namespace std;
 
 namespace ORB_SLAM2

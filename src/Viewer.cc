@@ -258,4 +258,8 @@ void Viewer::Release()
     mbStopped = false;
 }
 
+cv::Mat Viewer::DrawFrame() {
+    return mpFrameDrawer->DrawFrame();
+}
+
 }

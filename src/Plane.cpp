@@ -94,25 +94,25 @@ namespace ORB_SLAM2
         Tpw.rowRange(0,3).colRange(0,3) = ExpSO3(v*ang/sa)*ExpSO3(up*rang);
         o.copyTo(Tpw.col(3).rowRange(0,3));
 
-        glTpw.m[0] = Tpw.at<float>(0,0);
-        glTpw.m[1] = Tpw.at<float>(1,0);
-        glTpw.m[2] = Tpw.at<float>(2,0);
-        glTpw.m[3]  = 0.0;
-
-        glTpw.m[4] = Tpw.at<float>(0,1);
-        glTpw.m[5] = Tpw.at<float>(1,1);
-        glTpw.m[6] = Tpw.at<float>(2,1);
-        glTpw.m[7]  = 0.0;
-
-        glTpw.m[8] = Tpw.at<float>(0,2);
-        glTpw.m[9] = Tpw.at<float>(1,2);
-        glTpw.m[10] = Tpw.at<float>(2,2);
-        glTpw.m[11]  = 0.0;
-
-        glTpw.m[12] = Tpw.at<float>(0,3);
-        glTpw.m[13] = Tpw.at<float>(1,3);
-        glTpw.m[14] = Tpw.at<float>(2,3);
-        glTpw.m[15]  = 1.0;
+//        glTpw.m[0] = Tpw.at<float>(0,0);
+//        glTpw.m[1] = Tpw.at<float>(1,0);
+//        glTpw.m[2] = Tpw.at<float>(2,0);
+//        glTpw.m[3]  = 0.0;
+//
+//        glTpw.m[4] = Tpw.at<float>(0,1);
+//        glTpw.m[5] = Tpw.at<float>(1,1);
+//        glTpw.m[6] = Tpw.at<float>(2,1);
+//        glTpw.m[7]  = 0.0;
+//
+//        glTpw.m[8] = Tpw.at<float>(0,2);
+//        glTpw.m[9] = Tpw.at<float>(1,2);
+//        glTpw.m[10] = Tpw.at<float>(2,2);
+//        glTpw.m[11]  = 0.0;
+//
+//        glTpw.m[12] = Tpw.at<float>(0,3);
+//        glTpw.m[13] = Tpw.at<float>(1,3);
+//        glTpw.m[14] = Tpw.at<float>(2,3);
+//        glTpw.m[15]  = 1.0;
 
     }
 
@@ -133,25 +133,25 @@ namespace ORB_SLAM2
         Tpw.rowRange(0,3).colRange(0,3) = ExpSO3(v*a/s)*ExpSO3(up*rang);
         o.copyTo(Tpw.col(3).rowRange(0,3));
 
-        glTpw.m[0] = Tpw.at<float>(0,0);
-        glTpw.m[1] = Tpw.at<float>(1,0);
-        glTpw.m[2] = Tpw.at<float>(2,0);
-        glTpw.m[3]  = 0.0;
-
-        glTpw.m[4] = Tpw.at<float>(0,1);
-        glTpw.m[5] = Tpw.at<float>(1,1);
-        glTpw.m[6] = Tpw.at<float>(2,1);
-        glTpw.m[7]  = 0.0;
-
-        glTpw.m[8] = Tpw.at<float>(0,2);
-        glTpw.m[9] = Tpw.at<float>(1,2);
-        glTpw.m[10] = Tpw.at<float>(2,2);
-        glTpw.m[11]  = 0.0;
-
-        glTpw.m[12] = Tpw.at<float>(0,3);
-        glTpw.m[13] = Tpw.at<float>(1,3);
-        glTpw.m[14] = Tpw.at<float>(2,3);
-        glTpw.m[15]  = 1.0;
+//        glTpw.m[0] = Tpw.at<float>(0,0);
+//        glTpw.m[1] = Tpw.at<float>(1,0);
+//        glTpw.m[2] = Tpw.at<float>(2,0);
+//        glTpw.m[3]  = 0.0;
+//
+//        glTpw.m[4] = Tpw.at<float>(0,1);
+//        glTpw.m[5] = Tpw.at<float>(1,1);
+//        glTpw.m[6] = Tpw.at<float>(2,1);
+//        glTpw.m[7]  = 0.0;
+//
+//        glTpw.m[8] = Tpw.at<float>(0,2);
+//        glTpw.m[9] = Tpw.at<float>(1,2);
+//        glTpw.m[10] = Tpw.at<float>(2,2);
+//        glTpw.m[11]  = 0.0;
+//
+//        glTpw.m[12] = Tpw.at<float>(0,3);
+//        glTpw.m[13] = Tpw.at<float>(1,3);
+//        glTpw.m[14] = Tpw.at<float>(2,3);
+//        glTpw.m[15]  = 1.0;
     }
 }
 

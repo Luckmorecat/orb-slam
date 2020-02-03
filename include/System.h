@@ -35,6 +35,7 @@
 #include "IViewer.h"
 #include "Plane.h"
 #include "PlaneDetector.h"
+#include "WebViewer.h"
 
 namespace ORB_SLAM2
 {
@@ -46,6 +47,7 @@ class Tracking;
 class LocalMapping;
 class LoopClosing;
 class Plane;
+class WebViewer;
 
 class System
 {
@@ -61,6 +63,9 @@ public:
 
     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
     System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, IViewer *viewer);
+
+
+    System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, WebViewer viewer);
 
     // Proccess the given stereo frame. Images must be synchronized and rectified.
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
@@ -128,6 +133,14 @@ public:
     cv::Mat GetCurrentTcw();
 
     cv::Mat mCurrentTcw;
+
+    cv::Mat GetCurrentCameraPose();
+
+    int GetCountKeyFrames();
+
+    int GetCountMapPointsInMap();
+
+    cv::Mat DrawFeatures();
 
 private:
 

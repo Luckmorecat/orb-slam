@@ -68,33 +68,32 @@ ${Pangolin_INCLUDE_DIRS}
 )
 
 
-add_library(${PROJECT_NAME} STATIC
-src/System.cc
-src/Tracking.cc
-src/LocalMapping.cc
-src/LoopClosing.cc
-src/ORBextractor.cc
-src/ORBmatcher.cc
-src/FrameDrawer.cc
-src/Converter.cc
-src/MapPoint.cc
-src/KeyFrame.cc
-src/Map.cc
-src/MapDrawer.cc
-src/Optimizer.cc
-src/PnPsolver.cc
-src/Frame.cc
-src/KeyFrameDatabase.cc
-src/Sim3Solver.cc
-src/Initializer.cc
-src/Viewer.cc
-#Examples/ROS/ORB_SLAM2/src/AR/ViewerAR.cc
-        src/Plane.cpp
-        src/PlaneDetector.cpp
-        src/ViewerAR.cpp
-)
-
 if (EMSCRIPTEN)
+
+   add_library(${PROJECT_NAME} STATIC
+           src/System.cc
+           src/Tracking.cc
+           src/LocalMapping.cc
+           src/LoopClosing.cc
+           src/ORBextractor.cc
+           src/ORBmatcher.cc
+           src/Converter.cc
+           src/MapPoint.cc
+           src/KeyFrame.cc
+           src/Map.cc
+           src/Optimizer.cc
+           src/PnPsolver.cc
+           src/Frame.cc
+           src/KeyFrameDatabase.cc
+           src/Sim3Solver.cc
+           src/Initializer.cc
+           src/FrameDrawer.cc
+           #Examples/ROS/ORB_SLAM2/src/AR/ViewerAR.cc
+           src/Plane.cpp
+           src/PlaneDetector.cpp
+           src/WebViewer.cpp
+           )
+
    target_link_libraries(${PROJECT_NAME}
 #           ${OpenCV_LIBS}
            ${opencv_js}
@@ -102,8 +101,39 @@ if (EMSCRIPTEN)
            ${Pangolin_LIBRARIES}
            ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.a
            ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.a
+           ${PROJECT_SOURCE_DIR}/Thirdparty/opencv-3.4/build_wasm/lib/libopencv_core.a
+           ${PROJECT_SOURCE_DIR}/Thirdparty/opencv-3.4/build_wasm/lib/libopencv_imgproc.a
+           ${PROJECT_SOURCE_DIR}/Thirdparty/opencv-3.4/build_wasm/3rdparty/lib/libzlib.a
+           ${PROJECT_SOURCE_DIR}/Thirdparty/opencv-3.4/build_wasm/3rdparty/lib/liblibprotobuf.a
            )
 else(EMSCRIPTEN)
+
+   add_library(${PROJECT_NAME} STATIC
+           src/System.cc
+           src/Tracking.cc
+           src/LocalMapping.cc
+           src/LoopClosing.cc
+           src/ORBextractor.cc
+           src/ORBmatcher.cc
+           src/FrameDrawer.cc
+           src/Converter.cc
+           src/MapPoint.cc
+           src/KeyFrame.cc
+           src/Map.cc
+           src/MapDrawer.cc
+           src/Optimizer.cc
+           src/PnPsolver.cc
+           src/Frame.cc
+           src/KeyFrameDatabase.cc
+           src/Sim3Solver.cc
+           src/Initializer.cc
+           src/Viewer.cc
+           #Examples/ROS/ORB_SLAM2/src/AR/ViewerAR.cc
+           src/Plane.cpp
+           src/PlaneDetector.cpp
+           src/ViewerAR.cpp
+           )
+
    target_link_libraries(${PROJECT_NAME}
            ${OpenCV_LIBS}
            ${EIGEN3_LIBS}
@@ -148,11 +178,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
 #Examples/Monocular/mono_euroc.cc)
 #target_link_libraries(mono_euroc ${PROJECT_NAME})
 #
-add_executable(mono_tum_ar
-Examples/Monocular/mono_ar.cpp)
-target_link_libraries(mono_tum_ar ${PROJECT_NAME})
+IF(EMSCRIPTEN)
+   add_executable(mono_web
+           Examples/Monocular/bindings_with_cv.cpp)
+   target_link_libraries(mono_web ${PROJECT_NAME})
+   set_target_properties(mono_web PROPERTIES LINK_FLAGS " -s DISABLE_EXCEPTION_CATCHING=0 -s TOTAL_MEMORY=256MB -s DEMANGLE_SUPPORT=1 --bind --use-preload-plugins")
+ELSE(EMSCRIPTEN)
+   add_executable(mono_tum_ar
+           Examples/Monocular/mono_ar.cpp)
+   target_link_libraries(mono_tum_ar ${PROJECT_NAME})
 
-add_executable(mono_tum_custom
-Examples/Monocular/mono_tum_custom.cc)
-target_link_libraries(mono_tum_custom ${PROJECT_NAME})
+   add_executable(mono_tum_custom
+           Examples/Monocular/mono_tum_custom.cc)
+   target_link_libraries(mono_tum_custom ${PROJECT_NAME})
+ENDIF(EMSCRIPTEN)
+
 

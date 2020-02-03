@@ -211,8 +211,6 @@ namespace ORB_SLAM2 {
     }
 
     bool ViewerAR::isStopped() {
-        unique_lock<mutex> lock(mMutexStop);
-        isStop = true;
         return isStop;
     }
 
@@ -368,7 +366,12 @@ namespace ORB_SLAM2 {
     }
 
     void ViewerAR::RequestStop() {
-        return;
+        unique_lock<mutex> lock(mMutexStop);
+        isStop = true;
+    }
+
+    cv::Mat ViewerAR::DrawFrame() {
+        return cv::Mat();
     }
 
 }
