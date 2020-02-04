@@ -48,10 +48,6 @@ namespace ORB_SLAM2
         cv::Mat DrawFrame() override;
 
     private:
-
-        //SLAM
-        ORB_SLAM2::System* mpSystem;
-
         void PrintStatus(const int &status, const bool &bLocMode, cv::Mat &im);
         void AddTextToImage(const std::string &s, cv::Mat &im, const int r=0, const int g=0, const int b=0);
         void LoadCameraPose(const cv::Mat &Tcw);
