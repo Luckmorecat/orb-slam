@@ -62,7 +62,6 @@ endif()
 include_directories(
 ${PROJECT_SOURCE_DIR}
 ${PROJECT_SOURCE_DIR}/include
-${PROJECT_SOURCE_DIR}/Examples/ROS/ORB_SLAM2/src/AR
 ${EIGEN3_INCLUDE_DIR}
 ${Pangolin_INCLUDE_DIRS}
 )
@@ -88,7 +87,6 @@ if (EMSCRIPTEN)
            src/Sim3Solver.cc
            src/Initializer.cc
            src/FrameDrawer.cc
-           #Examples/ROS/ORB_SLAM2/src/AR/ViewerAR.cc
            src/Plane.cpp
            src/PlaneDetector.cpp
            src/WebViewer.cpp
@@ -108,7 +106,7 @@ if (EMSCRIPTEN)
            )
 else(EMSCRIPTEN)
 
-   add_library(${PROJECT_NAME} STATIC
+   add_library(${PROJECT_NAME} SHARED
            src/System.cc
            src/Tracking.cc
            src/LocalMapping.cc
@@ -127,11 +125,10 @@ else(EMSCRIPTEN)
            src/KeyFrameDatabase.cc
            src/Sim3Solver.cc
            src/Initializer.cc
-           src/Viewer.cc
-           #Examples/ROS/ORB_SLAM2/src/AR/ViewerAR.cc
            src/Plane.cpp
            src/PlaneDetector.cpp
            src/ViewerAR.cpp
+           src/Viewer.cc
            )
 
    target_link_libraries(${PROJECT_NAME}

@@ -31,11 +31,13 @@
 namespace ORB_SLAM2
 {
 
+#ifdef EMSCRIPTEN
     System::System(
             const string &strVocFile,
             const string &strSettingsFile,
             const ORB_SLAM2::System::eSensor sensor,
             ORB_SLAM2::WebViewer viewer): System(strVocFile, strSettingsFile, sensor, &viewer){}
+#endif
 
 System::System(
         const string &strVocFile,

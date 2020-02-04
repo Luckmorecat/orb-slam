@@ -1,12 +1,19 @@
 #ifndef ORB_SLAM2_WEBVIEWER_H
 #define ORB_SLAM2_WEBVIEWER_H
 
-#include "IViewer.h"
-#include "FrameDrawer.h"
 #include "opencv2/core/core.hpp"
+#include "FrameDrawer.h"
+
 
 namespace ORB_SLAM2
 {
+
+    class Tracking;
+    class FrameDrawer;
+    class System;
+    class IViewer;
+    class Map;
+
     class WebViewer: public IViewer
     {
     public:

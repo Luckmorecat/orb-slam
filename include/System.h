@@ -35,19 +35,23 @@
 #include "IViewer.h"
 #include "Plane.h"
 #include "PlaneDetector.h"
+#ifdef EMSCRIPTEN
 #include "WebViewer.h"
+#endif
 
 namespace ORB_SLAM2
 {
 
-class Viewer;
 class FrameDrawer;
 class Map;
 class Tracking;
 class LocalMapping;
 class LoopClosing;
 class Plane;
+class IViewer;
+#ifdef EMSCRIPTEN
 class WebViewer;
+#endif
 
 class System
 {
@@ -64,9 +68,9 @@ public:
     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
     System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, IViewer *viewer);
 
-
+#ifdef EMSCRIPTEN
     System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, WebViewer viewer);
-
+#endif
     // Proccess the given stereo frame. Images must be synchronized and rectified.
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
     // Returns the camera pose (empty if tracking fails).

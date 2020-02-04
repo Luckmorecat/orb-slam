@@ -12,10 +12,11 @@
 
 namespace ORB_SLAM2
 {
+
     class ViewerAR: public IViewer
     {
     public:
-        ViewerAR(const string settings);
+        ViewerAR(string settings);
 
         // Main thread function.
         void Run() override;

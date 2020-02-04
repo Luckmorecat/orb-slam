@@ -22,12 +22,10 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
-#include "IViewer.h"
 #include "FrameDrawer.h"
-#include "MapDrawer.h"
-#include "Tracking.h"
-#include "System.h"
 #include "opencv2/core/core.hpp"
+#include "MapDrawer.h"
+#include "IViewer.h"
 
 #include <mutex>
 

@@ -2,7 +2,7 @@
 
 namespace ORB_SLAM2
 {
-    WebViewer::WebViewer() {
+    WebViewer::WebViewer():isStop(false) {
         frameDrawer = new FrameDrawer();
     }
 
@@ -20,7 +20,9 @@ namespace ORB_SLAM2
 
     void WebViewer::RequestFinish() {}
 
-    bool WebViewer::isFinished() {}
+    bool WebViewer::isFinished() {
+        return true;
+    }
 
     void WebViewer::SetTracking(const ORB_SLAM2::Tracking *tracking) {}
 

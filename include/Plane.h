@@ -2,7 +2,9 @@
 #define ORB_SLAM2_PLANE_H
 
 #include <opencv2/core/core.hpp>
-//#include "pangolin/pangolin.h"
+#ifndef EMSCRIPTEN
+#include "pangolin/pangolin.h"
+#endif
 #include "MapPoint.h"
 
 namespace ORB_SLAM2
@@ -23,7 +25,9 @@ namespace ORB_SLAM2
         float rang;
         //transformation from world to the plane
         cv::Mat Tpw;
-//        pangolin::OpenGlMatrix glTpw;
+#ifndef EMSCRIPTEN
+        pangolin::OpenGlMatrix glTpw;
+#endif
         //MapPoints that define the plane
         std::vector<MapPoint*> mvMPs;
         //camera pose when the plane was first observed (to compute normal direction)

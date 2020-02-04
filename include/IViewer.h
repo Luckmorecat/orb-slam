@@ -5,18 +5,15 @@
 #ifndef ORB_SLAM2_IVIEWER_H
 #define ORB_SLAM2_IVIEWER_H
 
-#include "System.h"
-#include "Tracking.h"
 #include "opencv2/core/core.hpp"
-#include "Map.h"
+#include "System.h"
 
 
 namespace ORB_SLAM2
 {
 
     class Tracking;
-    class FrameDrawer;
-    class MapDrawer;
+    class Map;
     class System;
 
     class IViewer {

@@ -41,12 +41,11 @@
 namespace ORB_SLAM2
 {
 
-class IViewer;
-class FrameDrawer;
 class Map;
 class LocalMapping;
 class LoopClosing;
 class System;
+class IViewer;
 
 class Tracking
 {  

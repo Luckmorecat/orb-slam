@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 namespace ORB_SLAM2 {
-    ViewerAR::ViewerAR(const string settings):isStop(false) {
+    ViewerAR::ViewerAR(string settings):isStop(false) {
         cv::FileStorage fSettings(settings, cv::FileStorage::READ);
         float fps = fSettings["Camera.fps"];
         SetFPS(fps);
