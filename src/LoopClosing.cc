@@ -41,7 +41,7 @@ namespace ORB_SLAM2
 LoopClosing::LoopClosing(Map *pMap, KeyFrameDatabase *pDB, ORBVocabulary *pVoc, const bool bFixScale):
     mbResetRequested(false), mbFinishRequested(false), mbFinished(true), mpMap(pMap),
     mpKeyFrameDB(pDB), mpORBVocabulary(pVoc), mpMatchedKF(NULL), mLastLoopKFid(0), mbRunningGBA(false), mbFinishedGBA(true),
-    mbStopGBA(false), mpThreadGBA(NULL), mbFixScale(bFixScale), mnFullBAIdx(0)
+    mbStopGBA(false), mbFixScale(bFixScale), mnFullBAIdx(0)
 {
     mnCovisibilityConsistencyTh = 3;
 }
@@ -92,21 +92,27 @@ void LoopClosing::Run()
 
 void LoopClosing::InsertKeyFrame(KeyFrame *pKF)
 {
-    unique_lock<mutex> lock(mMutexLoopQueue);
+    #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexLoopQueue);
+#endif
     if(pKF->mnId!=0)
         mlpLoopKeyFrameQueue.push_back(pKF);
 }
 
 bool LoopClosing::CheckNewKeyFrames()
 {
-    unique_lock<mutex> lock(mMutexLoopQueue);
+    #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexLoopQueue);
+#endif
     return(!mlpLoopKeyFrameQueue.empty());
 }
 
 bool LoopClosing::DetectLoop()
 {
     {
-        unique_lock<mutex> lock(mMutexLoopQueue);
+        #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexLoopQueue);
+#endif
         mpCurrentKF = mlpLoopKeyFrameQueue.front();
         mlpLoopKeyFrameQueue.pop_front();
         // Avoid that a keyframe can be erased while it is being process by this thread
@@ -412,16 +418,19 @@ bool LoopClosing::DetectLoop()
         // If a Global Bundle Adjustment is running, abort it
         if(isRunningGBA())
         {
-        unique_lock<mutex> lock(mMutexGBA);
+        #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexGBA);
+#endif
             mbStopGBA = true;
 
             mnFullBAIdx++;
-
+#ifdef WITHTHREAD
             if(mpThreadGBA)
             {
                 mpThreadGBA->detach();
                 delete mpThreadGBA;
             }
+#endif
         }
 
         // Wait until Local Mapping has effectively stopped
@@ -445,7 +454,9 @@ bool LoopClosing::DetectLoop()
 
         {
             // Get Map Mutex
-        unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
+#if defined WITHTHREAD || defined BUILDNATIVE
+unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
+#endif
 
             for(auto & vit: mvpCurrentConnectedKFs)
             {
@@ -579,7 +590,9 @@ bool LoopClosing::DetectLoop()
         mbRunningGBA = true;
         mbFinishedGBA = false;
         mbStopGBA = false;
+#ifdef WITHTHREAD
         mpThreadGBA = new thread(&LoopClosing::RunGlobalBundleAdjustment,this,mpCurrentKF->mnId);
+#endif
 
         // Loop closed. Release Local Mapping.
         mpLocalMapper->Release();
@@ -603,7 +616,9 @@ bool LoopClosing::DetectLoop()
             matcher.Fuse(pKF,cvScw,mvpLoopMapPoints,4,vpReplacePoints);
 
             // Get Map Mutex
-        unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
+#if defined WITHTHREAD || defined BUILDNATIVE
+unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
+#endif
             const int nLP = mvpLoopMapPoints.size();
             for(int i=0; i<nLP;i++)
             {
@@ -620,7 +635,9 @@ bool LoopClosing::DetectLoop()
     void LoopClosing::RequestReset()
     {
         {
-        unique_lock<mutex> lock(mMutexReset);
+        #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexReset);
+#endif
             mbResetRequested = false;
             mlpLoopKeyFrameQueue.clear();
             mLastLoopKFid=0;
@@ -629,7 +646,9 @@ bool LoopClosing::DetectLoop()
         while(1)
         {
             {
-        unique_lock<mutex> lock2(mMutexReset);
+        #ifdef WITHTHREAD
+unique_lock<mutex> lock2(mMutexReset);
+#endif
                 if(!mbResetRequested)
                     break;
             }
@@ -639,7 +658,9 @@ bool LoopClosing::DetectLoop()
 
     void LoopClosing::ResetIfRequested()
     {
-    unique_lock<mutex> lock(mMutexReset);
+    #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexReset);
+#endif
         if(mbResetRequested)
         {
             mlpLoopKeyFrameQueue.clear();
@@ -660,7 +681,9 @@ bool LoopClosing::DetectLoop()
         // not included in the Global BA and they are not consistent with the updated map.
         // We need to propagate the correction through the spanning tree
         {
-        unique_lock<mutex> lock(mMutexGBA);
+        #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexGBA);
+#endif
             if(idx!=mnFullBAIdx)
                 return;
 
@@ -677,7 +700,9 @@ bool LoopClosing::DetectLoop()
                 }
 
                 // Get Map Mutex
-            unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
+#if defined WITHTHREAD || defined BUILDNATIVE
+unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
+#endif
 
                 // Correct keyframes starting at map first keyframe
                 list<KeyFrame*> lpKFtoCheck(mpMap->mvpKeyFrameOrigins.begin(),mpMap->mvpKeyFrameOrigins.end());
@@ -756,25 +781,33 @@ bool LoopClosing::DetectLoop()
 
     void LoopClosing::RequestFinish()
     {
-    unique_lock<mutex> lock(mMutexFinish);
+    #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexFinish);
+#endif
         mbFinishRequested = true;
     }
 
     bool LoopClosing::CheckFinish()
     {
-    unique_lock<mutex> lock(mMutexFinish);
+    #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexFinish);
+#endif
         return mbFinishRequested;
     }
 
     void LoopClosing::SetFinish()
     {
-    unique_lock<mutex> lock(mMutexFinish);
+    #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexFinish);
+#endif
         mbFinished = true;
     }
 
     bool LoopClosing::isFinished()
     {
-    unique_lock<mutex> lock(mMutexFinish);
+    #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexFinish);
+#endif
         return mbFinished;
     }
 

@@ -23,7 +23,9 @@
 #define SYSTEM_H
 
 #include<string>
+#ifdef WITHTHREAD
 #include<thread>
+#endif
 #include<opencv2/core/core.hpp>
 
 #include "Tracking.h"
@@ -182,16 +184,20 @@ private:
 
     // System threads: Local Mapping, Loop Closing, Viewer.
     // The Tracking thread "lives" in the main execution thread that creates the System object.
+#ifdef WITHTHREAD
     std::thread* mptLocalMapping;
     std::thread* mptLoopClosing;
+    std::mutex mMutexState;
+    std::mutex mMutexReset;
+    std::mutex mMutexMode;
+#endif
 //    std::thread* mptViewer;
 
     // Reset flag
-    std::mutex mMutexReset;
+
     bool mbReset;
 
     // Change mode flags
-    std::mutex mMutexMode;
     bool mbActivateLocalizationMode;
     bool mbDeactivateLocalizationMode;
 
@@ -199,7 +205,7 @@ private:
     int mTrackingState;
     std::vector<MapPoint*> mTrackedMapPoints;
     std::vector<cv::KeyPoint> mTrackedKeyPointsUn;
-    std::mutex mMutexState;
+
 };
 
 }// namespace ORB_SLAM

@@ -29,7 +29,9 @@
 #include "Frame.h"
 #include "KeyFrameDatabase.h"
 
+#ifdef WITHTHREAD
 #include <mutex>
+#endif
 
 
 namespace ORB_SLAM2
@@ -227,10 +229,11 @@ protected:
     float mHalfBaseline; // Only for visualization
 
     Map* mpMap;
-
+#ifdef WITHTHREAD
     std::mutex mMutexPose;
     std::mutex mMutexConnections;
     std::mutex mMutexFeatures;
+#endif
 };
 
 } //namespace ORB_SLAM

@@ -29,7 +29,9 @@
 #include "Frame.h"
 #include "ORBVocabulary.h"
 
+#ifdef WITHTHREAD
 #include<mutex>
+#endif
 
 
 namespace ORB_SLAM2
@@ -65,8 +67,10 @@ protected:
   // Inverted file
   std::vector<list<KeyFrame*> > mvInvertedFile;
 
+#ifdef WITHTHREAD
   // Mutex
   std::mutex mMutex;
+#endif
 };
 
 } //namespace ORB_SLAM

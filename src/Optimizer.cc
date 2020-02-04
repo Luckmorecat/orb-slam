@@ -32,7 +32,9 @@
 
 #include "Converter.h"
 
+#ifdef WITHTHREAD
 #include<mutex>
+#endif
 
 namespace ORB_SLAM2
 {
@@ -275,7 +277,9 @@ namespace ORB_SLAM2
 
 
         {
-    unique_lock<mutex> lock(MapPoint::mGlobalMutex);
+#if defined WITHTHREAD || defined BUILDNATIVE
+unique_lock<mutex> lock(MapPoint::mGlobalMutex);
+#endif
 
             for(int i=0; i<N; i++)
             {
@@ -743,7 +747,9 @@ namespace ORB_SLAM2
         }
 
         // Get Map Mutex
-    unique_lock<mutex> lock(pMap->mMutexMapUpdate);
+#if defined WITHTHREAD || defined BUILDNATIVE
+unique_lock<mutex> lock(pMap->mMutexMapUpdate);
+#endif
 
         if(!vToErase.empty())
         {
@@ -986,7 +992,9 @@ namespace ORB_SLAM2
         optimizer.initializeOptimization();
         optimizer.optimize(20);
 
-    unique_lock<mutex> lock(pMap->mMutexMapUpdate);
+#if defined WITHTHREAD || defined BUILDNATIVE
+unique_lock<mutex> lock(pMap->mMutexMapUpdate);
+#endif
 
         // SE3 Pose Recovering. Sim3:[sR t;0 1] -> SE3:[R t/s;0 1]
         for(size_t i=0;i<vpKFs.size();i++)

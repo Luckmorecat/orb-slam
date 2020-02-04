@@ -44,6 +44,9 @@ if (EMSCRIPTEN)
    file(GLOB opencv_js "${PROJECT_SOURCE_DIR}/Thirdparty/opencv-3.4/build_wasm/lib/*.a")
 
 else(EMSCRIPTEN)
+
+   add_definitions(-DBUILDNATIVE)
+
    find_package(OpenCV 3.0 QUIET)
    if(NOT OpenCV_FOUND)
       find_package(OpenCV 2.4.3 REQUIRED)
@@ -57,6 +60,10 @@ else(EMSCRIPTEN)
 
    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
+endif()
+
+if (WITHTHREAD)
+   add_definitions(-DWITHTHREAD)
 endif()
 
 include_directories(

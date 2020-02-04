@@ -22,7 +22,9 @@
 #include "MapPoint.h"
 #include "KeyFrame.h"
 #include <pangolin/pangolin.h>
+#ifdef WITHTHREAD
 #include <mutex>
+#endif
 
 namespace ORB_SLAM2
 {
@@ -225,7 +227,9 @@ void MapDrawer::DrawCurrentCamera(pangolin::OpenGlMatrix &Twc)
 
 void MapDrawer::SetCurrentCameraPose(const cv::Mat &Tcw)
 {
-    unique_lock<mutex> lock(mMutexCamera);
+    #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexCamera);
+#endif
     mCameraPose = Tcw.clone();
 }
 
@@ -236,7 +240,9 @@ void MapDrawer::GetCurrentOpenGLCameraMatrix(pangolin::OpenGlMatrix &M)
         cv::Mat Rwc(3,3,CV_32F);
         cv::Mat twc(3,1,CV_32F);
         {
-            unique_lock<mutex> lock(mMutexCamera);
+            #ifdef WITHTHREAD
+unique_lock<mutex> lock(mMutexCamera);
+#endif
             Rwc = mCameraPose.rowRange(0,3).colRange(0,3).t();
             twc = -Rwc*mCameraPose.rowRange(0,3).col(3);
         }

@@ -278,7 +278,9 @@ void Tracking::Track()
     mLastProcessedState=mState;
 
     // Get Map Mutex -> Map cannot be changed
-    unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
+#if defined WITHTHREAD || defined BUILDNATIVE
+unique_lock<mutex> lock(mpMap->mMutexMapUpdate);
+#endif
 
     if(mState==NOT_INITIALIZED)
     {
@@ -1511,9 +1513,12 @@ void Tracking::Reset()
     cout << "System Reseting" << endl;
     if(mpViewer)
     {
+        cout << "Reseting Viewer...";
         mpViewer->RequestStop();
         while(!mpViewer->isStopped())
             usleep(3000);
+
+        cout << " done" << endl;
     }
 
     // Reset Local Mapping

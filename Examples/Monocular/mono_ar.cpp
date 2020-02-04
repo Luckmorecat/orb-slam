@@ -29,6 +29,7 @@
 #include "MapDrawer.h"
 #include "FrameDrawer.h"
 #include "ViewerAR.h"
+#include "thread"
 
 #include<opencv2/core/core.hpp>
 

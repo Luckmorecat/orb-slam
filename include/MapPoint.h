@@ -26,7 +26,9 @@
 #include"Map.h"
 
 #include<opencv2/core/core.hpp>
+#if defined WITHTHREAD || defined BUILDNATIVE
 #include<mutex>
+#endif
 
 namespace ORB_SLAM2
 {
@@ -109,8 +111,9 @@ public:
     cv::Mat mPosGBA;
     long unsigned int mnBAGlobalForKF;
 
-
+#if defined WITHTHREAD || defined BUILDNATIVE
     static std::mutex mGlobalMutex;
+#endif
 
 protected:    
 
@@ -142,9 +145,10 @@ protected:
      float mfMaxDistance;
 
      Map* mpMap;
-
+#if defined WITHTHREAD || defined BUILDNATIVE
      std::mutex mMutexPos;
      std::mutex mMutexFeatures;
+#endif
 };
 
 } //namespace ORB_SLAM

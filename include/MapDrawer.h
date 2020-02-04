@@ -26,7 +26,9 @@
 #include"KeyFrame.h"
 #include<pangolin/pangolin.h>
 
-#include<mutex>
+#ifdef WITHTHREAD
+#include <mutex>
+#endif
 
 namespace ORB_SLAM2
 {
@@ -56,8 +58,9 @@ private:
     float mCameraLineWidth;
 
     cv::Mat mCameraPose;
-
+#ifdef WITHTHREAD
     std::mutex mMutexCamera;
+#endif
 };
 
 } //namespace ORB_SLAM

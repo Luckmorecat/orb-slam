@@ -25,7 +25,9 @@
 #include "KeyFrame.h"
 #include <set>
 
+#if defined WITHTHREAD || defined BUILDNATIVE
 #include <mutex>
+#endif
 
 
 
@@ -61,10 +63,12 @@ public:
 
     vector<KeyFrame*> mvpKeyFrameOrigins;
 
+#if defined WITHTHREAD || defined BUILDNATIVE
     std::mutex mMutexMapUpdate;
 
     // This avoid that two points are created simultaneously in separate threads (id conflict)
     std::mutex mMutexPointCreation;
+#endif
 
 protected:
     std::set<MapPoint*> mspMapPoints;
@@ -76,8 +80,9 @@ protected:
 
     // Index related to a big change in the map (loop closure, global BA)
     int mnBigChangeIdx;
-
+#if defined WITHTHREAD || defined BUILDNATIVE
     std::mutex mMutexMap;
+#endif
 };
 
 } //namespace ORB_SLAM

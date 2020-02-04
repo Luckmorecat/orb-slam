@@ -29,8 +29,10 @@
 
 #include "KeyFrameDatabase.h"
 
+#ifdef WITHTHREAD
 #include <thread>
 #include <mutex>
+#endif
 #include "Thirdparty/g2o/g2o/types/types_seven_dof_expmap.h"
 
 namespace ORB_SLAM2
@@ -68,11 +70,15 @@ public:
     void RunGlobalBundleAdjustment(unsigned long nLoopKF);
 
     bool isRunningGBA(){
-        unique_lock<std::mutex> lock(mMutexGBA);
+        #ifdef WITHTHREAD
+unique_lock<std::mutex> lock(mMutexGBA);
+#endif
         return mbRunningGBA;
     }
     bool isFinishedGBA(){
-        unique_lock<std::mutex> lock(mMutexGBA);
+        #ifdef WITHTHREAD
+unique_lock<std::mutex> lock(mMutexGBA);
+#endif
         return mbFinishedGBA;
     }   
 
@@ -96,13 +102,20 @@ protected:
 
     void ResetIfRequested();
     bool mbResetRequested;
+
+#ifdef WITHTHREAD
     std::mutex mMutexReset;
+    std::mutex mMutexFinish;
+    std::mutex mMutexLoopQueue;
+    std::mutex mMutexGBA;
+    std::thread* mpThreadGBA = nullptr;
+#endif
 
     bool CheckFinish();
     void SetFinish();
     bool mbFinishRequested;
     bool mbFinished;
-    std::mutex mMutexFinish;
+
 
     Map* mpMap;
     Tracking* mpTracker;
@@ -113,8 +126,6 @@ protected:
     LocalMapping *mpLocalMapper;
 
     std::list<KeyFrame*> mlpLoopKeyFrameQueue;
-
-    std::mutex mMutexLoopQueue;
 
     // Loop detector parameters
     float mnCovisibilityConsistencyTh;
@@ -136,8 +147,6 @@ protected:
     bool mbRunningGBA;
     bool mbFinishedGBA;
     bool mbStopGBA;
-    std::mutex mMutexGBA;
-    std::thread* mpThreadGBA;
 
     // Fix scale in the stereo/RGB-D case
     bool mbFixScale;
