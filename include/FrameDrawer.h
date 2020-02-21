@@ -28,7 +28,9 @@
 #include<opencv2/core/core.hpp>
 #include<opencv2/features2d/features2d.hpp>
 
+#if defined WITHTHREAD || defined BUILDNATIVE
 #include<mutex>
+#endif
 
 
 namespace ORB_SLAM2
@@ -66,8 +68,9 @@ protected:
     int mState;
 
     Map *mpMap;
-
+#if defined WITHTHREAD || defined BUILDNATIVE
     std::mutex mMutex;
+#endif
 };
 
 } //namespace ORB_SLAM

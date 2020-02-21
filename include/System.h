@@ -71,7 +71,7 @@ public:
     System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, IViewer *viewer);
 
 #ifdef EMSCRIPTEN
-    System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, WebViewer viewer);
+    System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor);
 #endif
     // Proccess the given stereo frame. Images must be synchronized and rectified.
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
@@ -125,6 +125,8 @@ public:
     void SaveTrajectoryKITTI(const string &filename);
 
     Plane* DetectPlane(const int iterations);
+
+    Plane DetectPlaneWeb();
 
     // TODO: Save/Load functions
     // SaveMap(const string &filename);

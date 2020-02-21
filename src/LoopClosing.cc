@@ -40,7 +40,7 @@ namespace ORB_SLAM2
 
 LoopClosing::LoopClosing(Map *pMap, KeyFrameDatabase *pDB, ORBVocabulary *pVoc, const bool bFixScale):
     mbResetRequested(false), mbFinishRequested(false), mbFinished(true), mpMap(pMap),
-    mpKeyFrameDB(pDB), mpORBVocabulary(pVoc), mpMatchedKF(NULL), mLastLoopKFid(0), mbRunningGBA(false), mbFinishedGBA(true),
+    mpKeyFrameDB(pDB), mpORBVocabulary(pVoc), mpMatchedKF(nullptr), mLastLoopKFid(0), mbRunningGBA(false), mbFinishedGBA(true),
     mbStopGBA(false), mbFixScale(bFixScale), mnFullBAIdx(0)
 {
     mnCovisibilityConsistencyTh = 3;
@@ -642,18 +642,19 @@ unique_lock<mutex> lock(mMutexReset);
             mlpLoopKeyFrameQueue.clear();
             mLastLoopKFid=0;
         }
-
+#ifdef WITHTHREAD
         while(1)
         {
             {
-        #ifdef WITHTHREAD
+
 unique_lock<mutex> lock2(mMutexReset);
-#endif
+
                 if(!mbResetRequested)
                     break;
             }
             usleep(5000);
         }
+#endif
     }
 
     void LoopClosing::ResetIfRequested()

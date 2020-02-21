@@ -37,8 +37,10 @@ namespace ORB_SLAM2
     System::System(
             const string &strVocFile,
             const string &strSettingsFile,
-            const ORB_SLAM2::System::eSensor sensor,
-            ORB_SLAM2::WebViewer viewer): System(strVocFile, strSettingsFile, sensor, &viewer){}
+            const ORB_SLAM2::System::eSensor sensor
+            ): System(strVocFile, strSettingsFile, sensor, new WebViewer()){
+        cout << "Constructor" << endl;
+    }
 #endif
 
 System::System(
@@ -53,12 +55,18 @@ System::System(
                mbActivateLocalizationMode(false),
                mbDeactivateLocalizationMode(false)
 {
+
+
     // Output welcome message
+
+    cout << mpViewer->isStopped() << endl;
+
     cout << endl <<
     "ORB-SLAM2 Copyright (C) 2014-2016 Raul Mur-Artal, University of Zaragoza." << endl <<
     "This program comes with ABSOLUTELY NO WARRANTY;" << endl  <<
     "This is free software, and you are welcome to redistribute it" << endl <<
     "under certain conditions. See LICENSE.txt." << endl << endl;
+
 
     cout << "Input sensor was set to: ";
 
@@ -295,7 +303,6 @@ unique_lock<mutex> lock(mMutexReset);
         mbReset = false;
     }
     }
-
     cv::Mat Tcw = mpTracker->GrabImageMonocular(im,timestamp);
 
 #ifndef WITHTHREAD
@@ -376,6 +383,13 @@ Plane* System::DetectPlane(const int iterations) {
     vector<MapPoint*> mapPoints = GetTrackedMapPoints();
     return planeDetector->DetectPlane(tcw, mapPoints, iterations);
 }
+
+Plane System::DetectPlaneWeb() {
+        cout << "c++ detect plane!" << endl;
+        return *DetectPlane(50);
+    }
+
+
 
 void System::SaveTrajectoryTUM(const string &filename)
 {

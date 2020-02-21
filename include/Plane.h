@@ -25,6 +25,9 @@ namespace ORB_SLAM2
         float rang;
         //transformation from world to the plane
         cv::Mat Tpw;
+
+        const cv::Mat &GetTpw() const;
+
 #ifndef EMSCRIPTEN
         pangolin::OpenGlMatrix glTpw;
 #endif

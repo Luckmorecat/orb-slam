@@ -24,6 +24,7 @@
 #include "Thirdparty/opencv-3.4/modules/core/src/parallel_impl.hpp"
 #include "System.h"
 #include "WebViewer.h"
+#include "Plane.h"
 
 #ifdef TEST_WASM_INTRIN
 #include "Thirdparty/opencv-3.4/modules/core/include/opencv2/core/hal/intrin.hpp"
@@ -2893,7 +2894,7 @@ namespace Wrappers {
 
 EMSCRIPTEN_BINDINGS(testBinding) {
         emscripten::class_<ORB_SLAM2::System>("Slam")
-                .constructor<std::string, std::string, ORB_SLAM2::System::eSensor, ORB_SLAM2::WebViewer>()
+                .constructor<std::string, std::string, ORB_SLAM2::System::eSensor>()
                 .function("TrackMonocular", &ORB_SLAM2::System::TrackMonocular)
                 .function("Shutdown", &ORB_SLAM2::System::Shutdown)
                 .function("GetTrackingState", &ORB_SLAM2::System::GetTrackingState)
@@ -2902,8 +2903,19 @@ EMSCRIPTEN_BINDINGS(testBinding) {
                 .function("DrawFeatures", &ORB_SLAM2::System::DrawFeatures)
                 .function("TrackRGBD", &ORB_SLAM2::System::TrackRGBD)
                 .function("GetCountKeyFrames", &ORB_SLAM2::System::GetCountKeyFrames)
+                .function("DetectPlane", &ORB_SLAM2::System::DetectPlaneWeb)
                 .function("GetCountMapPointsInMap", &ORB_SLAM2::System::GetCountMapPointsInMap)
                 .function("GetCurrentCameraPose", &ORB_SLAM2::System::GetCurrentCameraPose);
+
+        emscripten::class_<ORB_SLAM2::WebViewer>("WebViewer")
+            .constructor()
+            .function("RequestStop", &ORB_SLAM2::WebViewer::RequestStop)
+            .function("Release", &ORB_SLAM2::WebViewer::Release)
+            .function("isStopped", &ORB_SLAM2::WebViewer::isStopped);
+
+        emscripten::class_<ORB_SLAM2::Plane>("Plane")
+                .function("Recompute", &ORB_SLAM2::Plane::Recompute)
+                .function("GetTpw", &ORB_SLAM2::Plane::GetTpw);
 
         emscripten::enum_<ORB_SLAM2::System::eSensor>("eSensor")
         .value("MONOCULAR", ORB_SLAM2::System::eSensor::MONOCULAR)

@@ -3,6 +3,7 @@
 
 #include "opencv2/core/core.hpp"
 #include "FrameDrawer.h"
+#include "IViewer.h"
 
 
 namespace ORB_SLAM2
@@ -18,6 +19,8 @@ namespace ORB_SLAM2
     {
     public:
         WebViewer();
+
+        WebViewer(const WebViewer &webViewer);
 
         void Run() override;
 
@@ -40,6 +43,10 @@ namespace ORB_SLAM2
         void SetTracking(const Tracking *tracking) override;
 
         cv::Mat DrawFrame() override;
+
+        FrameDrawer* GetFrameDrawer();
+
+        System* GetSystem();
 
     private:
         bool isStop;

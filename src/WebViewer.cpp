@@ -1,9 +1,18 @@
 #include "WebViewer.h"
+#include <iostream>
 
 namespace ORB_SLAM2
 {
+
     WebViewer::WebViewer():isStop(false) {
         frameDrawer = new FrameDrawer();
+    }
+
+    WebViewer::WebViewer(const ORB_SLAM2::WebViewer &webViewer):
+        frameDrawer(webViewer.frameDrawer)
+    {
+//        mpSystem = webViewer.GetSystem();
+        std::cout << "Copy constructor worked here!\n";
     }
 
     void WebViewer::Run() {}
@@ -15,6 +24,7 @@ namespace ORB_SLAM2
 
     bool WebViewer::isStopped()
     {
+        cout << "test isstopped" << endl;
         return isStop;
     }
 
@@ -44,6 +54,13 @@ namespace ORB_SLAM2
         return frameDrawer->DrawFrame();
     }
 
+    FrameDrawer* WebViewer::GetFrameDrawer() {
+        return frameDrawer;
+    }
+
+    System* WebViewer::GetSystem() {
+        return mpSystem;
+    }
 
 }
 

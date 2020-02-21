@@ -771,18 +771,19 @@ unique_lock<mutex> lock(mMutexReset);
 #endif
         mbResetRequested = true;
     }
-
+#ifdef WITHTHREAD
     while(1)
     {
         {
-            #ifdef WITHTHREAD
+
 unique_lock<mutex> lock2(mMutexReset);
-#endif
+
             if(!mbResetRequested)
                 break;
         }
         usleep(3000);
     }
+#endif
 }
 
 void LocalMapping::ResetIfRequested()

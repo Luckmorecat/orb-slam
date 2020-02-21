@@ -24,7 +24,7 @@ namespace ORB_SLAM2
         const int N = vPoints.size();
 
         if(N<50)
-            return NULL;
+            return nullptr;
 
 
         // Indices for minimum set selection

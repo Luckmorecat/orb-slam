@@ -23,16 +23,17 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <iostream>
 
 #include<mutex>
 
 namespace ORB_SLAM2
 {
 
-FrameDrawer::FrameDrawer():mpMap(NULL)
+FrameDrawer::FrameDrawer():mpMap(nullptr)
 {
     mState=Tracking::SYSTEM_NOT_READY;
-    mIm = cv::Mat(480,640,CV_8UC3, cv::Scalar(0,0,0));
+    mIm = cv::Mat(480,320,CV_8UC3, cv::Scalar(0,0,0));
 }
 
 void FrameDrawer::SetMap(const ORB_SLAM2::Map *map) {
@@ -50,7 +51,9 @@ cv::Mat FrameDrawer::DrawFrame()
 
     //Copy variables within scoped mutex
     {
+#if defined WITHTHREAD || defined BUILDNATIVE
         unique_lock<mutex> lock(mMutex);
+#endif
         state=mState;
         if(mState==Tracking::SYSTEM_NOT_READY)
             mState=Tracking::NO_IMAGES_YET;
@@ -81,6 +84,9 @@ cv::Mat FrameDrawer::DrawFrame()
     //Draw
     if(state==Tracking::NOT_INITIALIZED) //INITIALIZING
     {
+
+        cout << "Count red: " << vMatches.size() << endl;
+
         for(unsigned int i=0; i<vMatches.size(); i++)
         {
             if(vMatches[i]>=0)
@@ -96,6 +102,7 @@ cv::Mat FrameDrawer::DrawFrame()
         mnTrackedVO=0;
         const float r = 5;
         const int n = vCurrentKeys.size();
+        cout << "Count green: " << n << endl;
         for(int i=0;i<n;i++)
         {
             if(vbVO[i] || vbMap[i])
@@ -128,6 +135,7 @@ cv::Mat FrameDrawer::DrawFrame()
 
     return imWithInfo;
 }
+
 
 
 void FrameDrawer::DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText)
@@ -170,7 +178,9 @@ void FrameDrawer::DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText)
 
 void FrameDrawer::Update(Tracking *pTracker)
 {
+#if defined WITHTHREAD || defined BUILDNATIVE
     unique_lock<mutex> lock(mMutex);
+#endif
     pTracker->mImGray.copyTo(mIm);
     mvCurrentKeys=pTracker->mCurrentFrame.mvKeys;
     N = mvCurrentKeys.size();

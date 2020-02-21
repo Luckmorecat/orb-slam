@@ -7,9 +7,6 @@ ENDIF()
 
 MESSAGE("Build type: " ${CMAKE_BUILD_TYPE})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3 -march=native ")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3 -march=native")
-
 # Check C++11 or C++0x support
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -31,7 +28,8 @@ LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 if (EMSCRIPTEN)
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s WASM=1")
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_PTHREADS=0")
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ASSERTIONS=1")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s ASSERTIONS=2")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 
    include_directories(${PROJECT_SOURCE_DIR}/Thirdparty/opencv-3.4/include)
    include_directories(${PROJECT_SOURCE_DIR}/Thirdparty/opencv-3.4/build_wasm)
@@ -44,7 +42,8 @@ if (EMSCRIPTEN)
    file(GLOB opencv_js "${PROJECT_SOURCE_DIR}/Thirdparty/opencv-3.4/build_wasm/lib/*.a")
 
 else(EMSCRIPTEN)
-
+   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall  -O3 -march=native ")
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall   -O3 -march=native")
    add_definitions(-DBUILDNATIVE)
 
    find_package(OpenCV 3.0 QUIET)

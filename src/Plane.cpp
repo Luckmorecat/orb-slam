@@ -157,6 +157,10 @@ namespace ORB_SLAM2
         glTpw.m[15]  = 1.0;
 #endif
     }
+
+    const cv::Mat &Plane::GetTpw() const {
+        return Tpw;
+    }
 }
 
 
